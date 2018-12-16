@@ -1,7 +1,7 @@
 {
   "name": "filesystem-server",
   "version": "1.0.0",
-  "description": "Node app to serve filesystem over Localhost",
+  "description": "Node app to serve the filesystem over Localhost via API call",
   "main": "src/service.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
