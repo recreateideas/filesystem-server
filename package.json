@@ -1,0 +1,21 @@
+{
+  "name": "filesystem-server",
+  "version": "1.0.0",
+  "description": "Node app to serve filesystem over Localhost",
+  "main": "src/service.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently \"nodemon src/service/service.js\""
+  },
+  "devDependencies": {
+    "nodemon": "1.18.2",
+    "express": "4.16.3",
+    "body-parser": "1.18.3",
+    "concurrently": "3.5.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5"
+  },
+  "author": "recreateIdeas",
+  "license": "ISC"
+}
