@@ -1,6 +1,11 @@
+#!/usr/bin/env node
 const express =require('express');
 const bodyParser = require('body-parser');
 var cors = require('cors');
+
+let [,,port] = process.argv;
+
+if(port === undefined) port = 2222;
 
 const app = express();
 
@@ -11,6 +16,17 @@ app.use(cors());
 require('./routes')(app);
 
 // app.use(errors());
-app.listen('2222');
+app.listen(port);
 
-console.log(`Listening on localhost, port: 2222`);
+console.log(`
+    ##############################################
+                                         
+        Listening on localhost, port: ${port}     
+        ---------------------------------       
+        We're ready to serve your filesystem.        
+        to access a file via API call
+        send its uri-encoded, absolute path to 
+        http://localhost:${port}/files/        
+                                              
+    ##############################################
+`);

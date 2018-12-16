@@ -13,6 +13,9 @@
     "body-parser": "1.18.3",
     "concurrently": "3.5.0"
   },
+  "bin": {
+    "filesystem-server": "src/service.js"
+  },
   "dependencies": {
     "cors": "2.8.5"
   },
