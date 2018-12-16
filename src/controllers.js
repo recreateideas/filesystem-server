@@ -2,7 +2,7 @@ module.exports = {
 
     handleFilePath: async (req,res) => {
 
-        console.log('Serving file-> ',req.params.path);
+        console.log(`@@@ :: ${new Date()} -> Serving file: ${req.params.path}`);
         res.sendFile(req.params.path);
 
     },

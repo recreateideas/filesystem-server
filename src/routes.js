@@ -5,7 +5,7 @@ module.exports = (app) => {
     app.get('/files/:path', handleFilePath);
 
     app.get('/testConnection',(req,res) => {
-        console.log('Filesystem connected!');
+        console.log(`@@@ :: ${new Date()} -> Filesystem is connected!`);
         res.json({fssConnected:"true"});
     });
 
