@@ -11,6 +11,6 @@ app.use(cors());
 require('./routes')(app);
 
 // app.use(errors());
-app.listen('5011');
+app.listen('2222');
 
-console.log(`Listening on localhost, port: 5011`);
+console.log(`Listening on localhost, port: 2222`);
