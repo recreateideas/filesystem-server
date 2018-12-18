@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { writeFile } = require('./utils');
+const { writeFile } = require('./utils/helpers');
 let hotReloadList = {};
 const globalHotReloadFileLocation = path.join(__dirname,'globalHotReload');
 // create if doesn't exists
