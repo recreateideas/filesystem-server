@@ -2,9 +2,9 @@ const { handleFilePath } = require('./controllers');
 
 module.exports = (app) => {
 
-    app.get(/[^(\/testConnection)]/, handleFilePath);
+    app.get(/[^(\/testFSSConnection)]/, handleFilePath);
 
-    app.get('/testConnection',(req,res) => {
+    app.get('/testFSSConnection',(req,res) => {
         console.log(`@@@ :: ${new Date()} -> Filesystem is connected!`);
         res.json({fssConnected:"true"});
     });

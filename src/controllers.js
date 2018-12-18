@@ -35,7 +35,7 @@ module.exports = {
                 contentType = 'audio/wav';
                 break;
         }
-        await fs.readFile(filePath, async(error, content) => {
+        fs.readFile(filePath, async(error, content) => {
             if (error) {
                 if(error.code == 'ENOENT'){
                     res.writeHead(200, { 'Content-Type': contentType });
@@ -50,9 +50,9 @@ module.exports = {
             }
             else {
                 console.log(`@@@ :: ${new Date()} -> Serving file: ${filePath}`);
-                await res.writeHead(200, { 'Content-Type': contentType });
+                // console.log(object);
                 res.sendFile(filePath);
-                res.end();
+                // res.end();
             }
         });
 
