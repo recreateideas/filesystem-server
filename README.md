@@ -2,7 +2,7 @@
 
 Node app to serve the filesystem over Localhost via API call.
 
-## Clone / Download the repository
+## Installation
 
 Use npm to install filesystem-server globally
 
@@ -14,6 +14,28 @@ npm install -g filesystem-server
 in your terminal run:
 ```bash
 filesystem-server [port] #default 2222
+```
+## From Web App
+1 - test the connectivity
+```
+const url = `http://localhost:${port}/testFSSConnection`
+const res = await fetch(url);
+if (json.fssConnected === 'true') {
+   // connected
+} else {
+   // not connected
+}
+```
+2 - make GET requests to find your files
+
+```
+const url = `http://localhost:${port}/files/%2FUsers%2Frecreate%2Fdev.js`
+const res = await fetch(url);
+if (json.fssConnected === 'true') {
+   // connected
+} else {
+   // not connected
+}
 ```
 
 ## Contributing
