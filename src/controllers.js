@@ -12,7 +12,7 @@ fs.watchFile(globalHotReloadFileLocation, (curr, prev) => {
 module.exports = {
 
     handleFilePath: async (req, res) => {
-        const filePath = req.url;
+        const {filePath} = req.params;
         var contentType = 'text/html';
         var extname = path.extname(filePath);
         switch (extname) {
@@ -45,14 +45,12 @@ module.exports = {
                 else {
                     res.writeHead(500);
                     console.log(`@@@ :: ERROR  ${new Date()} -> internal Server Error`);
-                    res.end('Sorry, check with the site admin for error: '+error.code+' ..\n');
+                    res.end('Sorry, check with us for error: '+error.code+' ..\n');
                 }
             }
             else {
                 console.log(`@@@ :: ${new Date()} -> Serving file: ${filePath}`);
-                // console.log(object);
                 res.sendFile(filePath);
-                // res.end();
             }
         });
 

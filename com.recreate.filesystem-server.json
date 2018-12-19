@@ -1,0 +1,9 @@
+{
+    "name": "com.recreate.filesystem-server",
+    "description": "filesystem-server",
+    "type": "stdio",
+    "path": "/Users/claudio/filesystem-server/src/service.js",
+    "allowed_origins": [
+      "chrome-extension://iklekbiihlfiebamiidhgcdafpipdamp/"
+    ]
+  }
