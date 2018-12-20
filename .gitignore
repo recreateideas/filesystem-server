@@ -3,3 +3,6 @@
 package-lock.json
 
 globalHotReload
+
+/security/cert.key
+/security/cert.pem
