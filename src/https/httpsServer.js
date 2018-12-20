@@ -29,7 +29,7 @@ const createHttpsServer = (args) => {
     };
 
     const server = https.createServer(httpsOptions, app).listen(httpsPort, () => {
-        console.log('Https server running at ' + httpsPort);
+        // console.log('Https server running at ' + httpsPort);
     });
     return server;
 };
