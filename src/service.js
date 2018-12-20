@@ -1,7 +1,7 @@
 // #!/usr/bin/env node
 const express = require('express');
 const { printConsole } = require('./utils/consoleLog');
-const {createHttpsServer} = require('./https/httpsServer');
+const { createHttpsServer, installSSLKey } = require('./https/httpsServer');
 
 var cors = require('cors');
 
@@ -13,14 +13,18 @@ if (httpsPort === undefined) httpsPort = 4444;
 
 console.log(process.argv);
 
-printConsole(port, httpsPort);
 
-const app = express();
+installSSLKey().then(stdout => {
+ 
+    printConsole(port, httpsPort);
+    
+    const app = express();
 
-app.use(cors());
+    app.use(cors());
 
-createHttpsServer({app, httpsPort});
+    createHttpsServer({ app, httpsPort });
 
-require('./routes')(app);
+    require('./routes')(app);
 
-app.listen(port);
+    app.listen(port);
+});
