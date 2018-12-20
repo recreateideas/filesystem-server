@@ -32,12 +32,8 @@ if (json.fssConnected === 'true') {
 ```
 const url = `http://localhost:${port}/files/%2FUsers%2Frecreate%2Fdev.js`
 // or const url = `https://localhost:${httpsPort}/files/%2FUsers%2Frecreate%2Fdev.js`
-const res = await fetch(url);
-if (json.fssConnected === 'true') {
-   // connected
-} else {
-   // not connected
-}
+const fileSource = await fetch(url);
+// ...
 ```
 
 ## Contributing
