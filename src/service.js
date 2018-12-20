@@ -2,7 +2,7 @@
 
 const express = require('express');
 const { printConsole } = require('./utils/consoleLog');
-const { createHttpsServer, installSSLKey } = require('./https/httpsServer');
+const { createHttpsServer, /*installSSLKey*/ } = require('./https/httpsServer');
 
 var cors = require('cors');
 
@@ -15,7 +15,7 @@ if (httpsPort === undefined) httpsPort = 4444;
 console.log(process.argv);
 
 
-installSSLKey().then(stdout => {
+// installSSLKey().then(stdout => {
  
     printConsole(port, httpsPort);
     
@@ -28,4 +28,4 @@ installSSLKey().then(stdout => {
     require('./routes')(app);
 
     app.listen(port);
-});
+// });
