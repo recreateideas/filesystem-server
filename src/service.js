@@ -1,4 +1,5 @@
-// #!/usr/bin/env node
+#!/usr/bin/env node
+
 const express = require('express');
 const { printConsole } = require('./utils/consoleLog');
 const { createHttpsServer, installSSLKey } = require('./https/httpsServer');
