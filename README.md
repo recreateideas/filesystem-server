@@ -13,12 +13,13 @@ npm install -g filesystem-server
 ## Usage
 in your terminal run:
 ```bash
-filesystem-server [port] #default 2222
+filesystem-server [port] [https port] #?optional default 2222 4444
 ```
 ## From Web App
 1 - test the connectivity
 ```
 const url = `http://localhost:${port}/testFSSConnection`
+// or const url = `https://localhost:${httpsPort}/testFSSConnection`
 const res = await fetch(url);
 if (json.fssConnected === 'true') {
    // connected
@@ -30,6 +31,7 @@ if (json.fssConnected === 'true') {
 
 ```
 const url = `http://localhost:${port}/files/%2FUsers%2Frecreate%2Fdev.js`
+// or const url = `https://localhost:${httpsPort}/files/%2FUsers%2Frecreate%2Fdev.js`
 const res = await fetch(url);
 if (json.fssConnected === 'true') {
    // connected
