@@ -59,7 +59,7 @@ module.exports = {
     },
 
     enableHotReload: async (req, res) => {
-        const { fileSource, hotReload, thisTab } = req.body;
+        const { fileSource, hotReload } = req.body;
 
         if (hotReload) {
             if (fs.existsSync(fileSource)) {
@@ -71,7 +71,7 @@ module.exports = {
                 watchFile.on('change', fileSource => {
                     console.log(`${fileSource} has changed, reload Tab`);
                     watchFile.unwatch(fileSource);
-                    res.json({hotReload, changed: true, fileSource, thisTab});
+                    res.json({hotReload, changed: true, fileSource,});
                 })
                 .on('unlink', path => console.log(`File ${path} has been removed`));
 
@@ -79,13 +79,13 @@ module.exports = {
                 if(watchFile) watchFile.unwatch(fileSource);
 
                 console.log(`ERROR: file ${fileSource} doesnt exists!`);
-                res.json({hotReload, fileSource, error: `the file doesn't exist`,thisTab});
+                res.json({hotReload, fileSource, error: `the file doesn't exist`});
             }
         } else {
             console.log(`@@@ :: ${new Date()} -> DISABLED HotReload for: ${fileSource}`);
             if(watchFile) watchFile.unwatch(fileSource);
 
-            res.json({hotReload, fileSource, thisTab});
+            res.json({hotReload, fileSource});
         }
         // res.end(`hotReload value was not acceptable: ${hotReload}`);
     },
