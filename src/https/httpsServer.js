@@ -24,8 +24,8 @@ const createHttpsServer = (args) => {
     } = args;
 
     const httpsOptions = {
-        key: fs.readFileSync('./security/cert.key'),
-        cert: fs.readFileSync('./security/cert.pem')
+     key: fs.readFileSync(__dirname + '/../../security/cert.key'),
+        cert: fs.readFileSync(__dirname + '/../../security/cert.pem')
     };
 
     const server = https.createServer(httpsOptions, app).listen(httpsPort, () => {

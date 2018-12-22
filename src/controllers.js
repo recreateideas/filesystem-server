@@ -1,9 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 const { writeFile } = require('./utils/helpers');
+var chokidar = require('chokidar');
+
+const globalHotReloadFileLocation = path.join(__dirname,'globalHotReload'); // create if doesn't exists
 let hotReloadList = {};
-const globalHotReloadFileLocation = path.join(__dirname,'globalHotReload');
-// create if doesn't exists
+let watchFile;
 
 fs.watchFile(globalHotReloadFileLocation, (curr, prev) => {
     console.log(`watching ${globalHotReloadFileLocation}`);
@@ -57,40 +59,35 @@ module.exports = {
     },
 
     enableHotReload: async (req, res) => {
-        const { enableHotReload, path } = req.params;
-        console.log(`@@@ :: ${new Date()} -> ENABLE HotReload for: ${path}`);
-        if (enableHotReload) {
+        const { fileSource, hotReload, thisTab } = req.body;
 
-            hotReloadList[path] = true;
+        if (hotReload) {
+            if (fs.existsSync(fileSource)) {
+                console.log(`@@@ :: ${new Date()} -> ENABLED HotReload for: ${fileSource}`);
+                if(watchFile) watchFile.unwatch(fileSource);
 
-            writeFile(globalHotReloadFileLocation,hotReloadList);
+                watchFile = chokidar.watch(fileSource,{persistent: true,});
 
-            // fs.watchFile(path, (curr, prev) => {
-            //     console.log('Added');
-            // });
+                watchFile.on('change', fileSource => {
+                    console.log(`${fileSource} has changed, reload Tab`);
+                    watchFile.unwatch(fileSource);
+                    res.json({hotReload, changed: true, fileSource, thisTab});
+                })
+                .on('unlink', path => console.log(`File ${path} has been removed`));
+
+            } else {
+                if(watchFile) watchFile.unwatch(fileSource);
+
+                console.log(`ERROR: file ${fileSource} doesnt exists!`);
+                res.json({hotReload, fileSource, error: `the file doesn't exist`,thisTab});
+            }
         } else {
-            // fs.unwatchFile(path, (curr, prev) => {
+            console.log(`@@@ :: ${new Date()} -> DISABLED HotReload for: ${fileSource}`);
+            if(watchFile) watchFile.unwatch(fileSource);
 
-            // });
+            res.json({hotReload, fileSource, thisTab});
         }
-
-        res.sendFile(path);
-
+        // res.end(`hotReload value was not acceptable: ${hotReload}`);
     },
-
-    hotReload: async (req, res) => {
-        const { path, hotReload } = req.params;
-        console.log(`@@@ :: ${new Date()} -> HotReload: ${path}`);
-        fs.watchFile(path, (curr, prev) => {
-            console.log('file changed!');
-            console.log(`the current mtime is: ${curr.mtime} - the previous mtime was: ${prev.mtime}`);
-        });
-        res.sendFile(path);
-
-    },
-
-};
-
-const hotReloadSwitch = () => {
 
 };

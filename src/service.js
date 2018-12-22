@@ -2,6 +2,7 @@
 
 const express = require('express');
 const { printConsole } = require('./utils/consoleLog');
+const bodyParser = require('body-parser');
 const { createHttpsServer, /*installSSLKey*/ } = require('./https/httpsServer');
 
 var cors = require('cors');
@@ -22,6 +23,8 @@ console.log(process.argv);
     const app = express();
 
     app.use(cors());
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({extended:true}));
 
     createHttpsServer({ app, httpsPort });
 
