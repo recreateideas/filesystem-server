@@ -3,51 +3,52 @@ const path = require('path');
 const { writeFile } = require('./utils/helpers');
 var chokidar = require('chokidar');
 
-const globalHotReloadFileLocation = path.join(__dirname,'globalHotReload'); // create if doesn't exists
-let hotReloadList = {};
-let watchFile;
+let fileWatcher, jsonWatcher;
 
-fs.watchFile(globalHotReloadFileLocation, (curr, prev) => {
-    console.log(`watching ${globalHotReloadFileLocation}`);
-});
+
+const findCiqJSON = (fileSource) => {
+    const fileName = path.basename(fileSource);
+    const absolutePath = path.dirname(fileSource);
+    const jsonName = `${fileName.match(/\d+/)[0]}_plain.json`;
+    return path.join(absolutePath, jsonName);
+};
+
+const mergeJSONinJS = (jsonPath, fileSource) => {
+    try {
+        fs.readFile(jsonPath, 'utf8', async (err, content) => {
+            if (err) return console.log(err);
+            const minifiedJSON = JSON.stringify(JSON.parse(content));
+            fs.readFile(fileSource, 'utf8', async (error, fileContent) => {
+                const updatedContent = fileContent
+                    .replace(/([\s\S]+)(var config_json\s?=\s?\')([\s\S]+)(\'\;[\s\n]+var config_db;)/, `$1$2${minifiedJSON}$4`);
+                fs.writeFile(fileSource, updatedContent, 'utf8', function (err) {
+                    if (err) return console.log(err);
+                });
+            });
+        });
+    } catch (err) {
+        return console.log(err);
+    }
+
+};
+
 
 module.exports = {
 
     handleFilePath: async (req, res) => {
-        const {filePath} = req.params;
-        var contentType = 'text/html';
-        var extname = path.extname(filePath);
-        switch (extname) {
-            case '.js':
-                contentType = 'text/javascript';
-                break;
-            case '.css':
-                contentType = 'text/css';
-                break;
-            case '.json':
-                contentType = 'application/json';
-                break;
-            case '.png':
-                contentType = 'image/png';
-                break;      
-            case '.jpg':
-                contentType = 'image/jpg';
-                break;
-            case '.wav':
-                contentType = 'audio/wav';
-                break;
-        }
-        fs.readFile(filePath, async(error, content) => {
+        const { filePath } = req.params;
+        const errorFile = path.join(__dirname, '/utils/errorFile.js');;
+
+        fs.readFile(filePath, async (error, content) => {
             if (error) {
-                if(error.code == 'ENOENT'){
-                    res.writeHead(200, { 'Content-Type': contentType });
+                if (error.code == 'ENOENT') {
                     console.log(`@@@ :: ERROR  ${new Date()} -> file not found: ${filePath}`);
-                    res.end("#file not found#", 'utf-8');
+                    console.log(`@@@ :: sending error file: ${errorFile}`);
+                    res.sendFile(errorFile);
                 }
                 else {
-                    res.writeHead(500);
                     console.log(`@@@ :: ERROR  ${new Date()} -> internal Server Error`);
-                    res.end('Sorry, check with us for error: '+error.code+' ..\n');
+                    res.end({ error: `Unexpected error: ${error}` });
                 }
             }
             else {
@@ -59,33 +60,50 @@ module.exports = {
     },
 
     enableHotReload: async (req, res) => {
-        const { fileSource, hotReload } = req.body;
+        const { fileSource, hotReload, thisTab, watchJSON } = req.body;
+
+        console.log(watchJSON);
+
+        let jsonPath = findCiqJSON(fileSource);
 
         if (hotReload) {
             if (fs.existsSync(fileSource)) {
-                console.log(`@@@ :: ${new Date()} -> ENABLED HotReload for: ${fileSource}`);
-                if(watchFile) watchFile.unwatch(fileSource);
-
-                watchFile = chokidar.watch(fileSource,{persistent: true,});
-
-                watchFile.on('change', fileSource => {
+                console.log(`@@@ :: ${new Date()} -> HotReload IS ACTIVE for: ${fileSource}`);
+                if (fileWatcher) fileWatcher.unwatch(fileSource);
+                fileWatcher = chokidar.watch(fileSource, { persistent: true, });
+                fileWatcher.on('change', fileSource => {
                     console.log(`${fileSource} has changed, reload Tab`);
-                    watchFile.unwatch(fileSource);
-                    res.json({hotReload, changed: true, fileSource,});
+                    fileWatcher.unwatch(fileSource);
+                    res.json({ thisTab, hotReload, changed: true, fileSource, });
                 })
-                .on('unlink', path => console.log(`File ${path} has been removed`));
+                    .on('unlink', path => console.log(`File ${path} has been removed`));
+
+                if(watchJSON){
+                    if (jsonWatcher) jsonWatcher.unwatch(jsonPath);
+                    jsonWatcher = chokidar.watch(jsonPath, { persistent: true, });
+                    jsonWatcher.on('change', jsonPath => {
+                        console.log(`${jsonPath} has changed, merge in file`);
+                        mergeJSONinJS(jsonPath, fileSource);
+                        fileWatcher.unwatch(jsonPath);
+                    })
+                        .on('unlink', path => console.log(`File ${path} has been removed`));
+                } else {
+                    if (jsonWatcher) jsonWatcher.unwatch(jsonPath);
+                }
 
             } else {
-                if(watchFile) watchFile.unwatch(fileSource);
+                if (fileWatcher) fileWatcher.unwatch(fileSource);
+                if (jsonWatcher) jsonWatcher.unwatch(jsonPath);
 
                 console.log(`ERROR: file ${fileSource} doesnt exists!`);
-                res.json({hotReload, fileSource, error: `the file doesn't exist`});
+                res.json({ thisTab, hotReload, fileSource, error: `the file doesn't exist` });
             }
         } else {
-            console.log(`@@@ :: ${new Date()} -> DISABLED HotReload for: ${fileSource}`);
-            if(watchFile) watchFile.unwatch(fileSource);
+            console.log(`@@@ :: ${new Date()} -> HotReload NOT ACTIVE for: ${fileSource}`);
+            if (fileWatcher) fileWatcher.unwatch(fileSource);
+            if (jsonWatcher) jsonWatcher.unwatch(jsonPath);
 
-            res.json({hotReload, fileSource});
+            res.json({ thisTab, hotReload, fileSource });
         }
         // res.end(`hotReload value was not acceptable: ${hotReload}`);
     },
