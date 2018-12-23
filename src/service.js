@@ -13,8 +13,6 @@ if (port === undefined) port = 2222;
 
 if (httpsPort === undefined) httpsPort = 4444;
 
-console.log(process.argv);
-
 
 // installSSLKey().then(stdout => {
  

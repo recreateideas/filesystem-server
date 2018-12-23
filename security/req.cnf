@@ -2,6 +2,7 @@
 distinguished_name = req_distinguished_name
 x509_extensions = v3_req
 prompt = no
+
 [req_distinguished_name]
 C = AU
 ST = NSW
@@ -13,6 +14,7 @@ CN = www.localhost.com
 keyUsage = critical, digitalSignature, keyAgreement
 extendedKeyUsage = serverAuth
 subjectAltName = @alt_names
+
 [alt_names]
 DNS.1 = www.localhost.com
 DNS.2 = localhost.com
