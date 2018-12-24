@@ -1,8 +1,10 @@
-const { handleFilePath, enableHotReload } = require('./controllers');
+const { handleFilePath, enableHotReload, doesFIleExist } = require('./controllers');
 
 module.exports = (app) => {
 
     // app.get(/[^(\/testFSSConnection)]/, handleFilePath);
+
+    app.get('/exists/:filePath', doesFIleExist);
 
     app.get('/files/:filePath', handleFilePath);
 

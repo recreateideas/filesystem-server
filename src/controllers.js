@@ -1,42 +1,27 @@
 const fs = require('fs');
 const path = require('path');
-const { writeFile } = require('./utils/helpers');
+const {findCiqJSON, mergeJSONinJS } = require('./utils/filesUtils');
 var chokidar = require('chokidar');
 
 let fileWatcher, jsonWatcher;
 
 
-const findCiqJSON = (fileSource) => {
-    const fileName = path.basename(fileSource);
-    const absolutePath = path.dirname(fileSource);
-    const jsonName = `${fileName.match(/\d+/)[0]}_plain.json`;
-    return path.join(absolutePath, jsonName);
-};
-
-const mergeJSONinJS = (jsonPath, fileSource) => {
-    try {
-        fs.readFile(jsonPath, 'utf8', async (err, content) => {
-            if (err) return console.log(err);
-            const minifiedJSON = JSON.stringify(JSON.parse(content));
-            fs.readFile(fileSource, 'utf8', async (error, fileContent) => {
-                const updatedContent = fileContent
-                    .replace(/([\s\S]+)(var config_json\s?=\s?\')([\s\S]+)(\'\;[\s\n]+var config_db;)/, `$1$2${minifiedJSON}$4`);
-                fs.writeFile(fileSource, updatedContent, 'utf8', function (err) {
-                    if (err) return console.log(err);
-                });
-            });
-        });
-    } catch (err) {
-        return console.log(err);
-    }
-
-};
-
-
 module.exports = {
+
+    doesFIleExist: (req, res) => {
+        const { filePath } = req.params;
+        if (fs.existsSync(filePath)) {
+            console.log(`@@@ :: WARN ${new Date()} -> file exists: ${filePath}`);
+            res.json({ fileExists: 'true' });
+        } else {
+            console.log(`@@@ :: WARN ${new Date()} -> file does not exist: ${filePath}`);
+            res.json({ fileExists: 'false' });
+        }
+    },
 
     handleFilePath: async (req, res) => {
         const { filePath } = req.params;
+
         const errorFile = path.join(__dirname, '/utils/errorFile.js');;
 
         fs.readFile(filePath, async (error, content) => {
@@ -62,8 +47,6 @@ module.exports = {
     enableHotReload: async (req, res) => {
         const { fileSource, hotReload, thisTab, watchJSON } = req.body;
 
-        console.log(watchJSON);
-
         let jsonPath = findCiqJSON(fileSource);
 
         if (hotReload) {
@@ -75,18 +58,21 @@ module.exports = {
                     console.log(`${fileSource} has changed, reload Tab`);
                     fileWatcher.unwatch(fileSource);
                     res.json({ thisTab, hotReload, changed: true, fileSource, });
-                })
-                    .on('unlink', path => console.log(`File ${path} has been removed`));
+                }).on('unlink', path => console.log(`File ${path} has been removed`));
 
                 if(watchJSON){
-                    if (jsonWatcher) jsonWatcher.unwatch(jsonPath);
-                    jsonWatcher = chokidar.watch(jsonPath, { persistent: true, });
-                    jsonWatcher.on('change', jsonPath => {
-                        console.log(`${jsonPath} has changed, merge in file`);
-                        mergeJSONinJS(jsonPath, fileSource);
-                        fileWatcher.unwatch(jsonPath);
-                    })
-                        .on('unlink', path => console.log(`File ${path} has been removed`));
+                    if (fs.existsSync(jsonPath)) {
+                        if (jsonWatcher) jsonWatcher.unwatch(jsonPath);
+                        jsonWatcher = chokidar.watch(jsonPath, { persistent: true, });
+                        console.log(`@@@ :: ${new Date()} -> JSON : HotReload IS ACTIVE for: ${jsonPath}`);
+                        jsonWatcher.on('change', jsonPath => {
+                            console.log(`${jsonPath} has changed, merge in file`);
+                            mergeJSONinJS(jsonPath, fileSource);
+                            fileWatcher.unwatch(jsonPath);
+                        }).on('unlink', path => console.log(`File ${path} has been removed`));
+                    } else {
+                        console.log(`@@@ :: ${new Date()} -> JSON file doesnt Exist: ${jsonPath}`);
+                    }
                 } else {
                     if (jsonWatcher) jsonWatcher.unwatch(jsonPath);
                 }
@@ -94,7 +80,6 @@ module.exports = {
             } else {
                 if (fileWatcher) fileWatcher.unwatch(fileSource);
                 if (jsonWatcher) jsonWatcher.unwatch(jsonPath);
-
                 console.log(`ERROR: file ${fileSource} doesnt exists!`);
                 res.json({ thisTab, hotReload, fileSource, error: `the file doesn't exist` });
             }
