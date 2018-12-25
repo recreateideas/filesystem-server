@@ -7,7 +7,8 @@ Node app to serve the filesystem over Localhost via API call.
 Use npm to install filesystem-server globally
 
 ```bash
-npm install -g filesystem-server
+npm install -g filesystem-server #macOS
+sudo npm install -g --unsafe filesystem-server #linux
 ```
 So that you can connect via https the installation script will install a SSL key and certificate that are valid for 10 years.\
 **If you have issues with those (https) please debug accordingly to your operative system. Otherwise try and stick to http.**\

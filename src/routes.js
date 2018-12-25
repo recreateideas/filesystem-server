@@ -2,8 +2,6 @@ const { handleFilePath, enableHotReload, doesFIleExist } = require('./controller
 
 module.exports = (app) => {
 
-    // app.get(/[^(\/testFSSConnection)]/, handleFilePath);
-
     app.get('/exists/:filePath', doesFIleExist);
 
     app.get('/files/:filePath', handleFilePath);
@@ -11,7 +9,7 @@ module.exports = (app) => {
     app.post('/hotReload/', enableHotReload);
 
     app.get('/testFSSConnection',(req,res) => {
-        console.log(`@@@ :: ${new Date()} -> connected!`);
+        console.log(`@@@ :: ${new Date()} -> connected`);
         res.json({fssConnected:"true"});
     });
 
