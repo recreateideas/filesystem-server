@@ -66,8 +66,7 @@ const fetchFile = async() => {
 6- Insert the absolute path or url of the javascript file you want to inject.\
 7- Decide wether you want to enable HOT RELOAD (this will reload the webpage you are injecting into every time you save changes to your local file!)\
 8- Turn the switch on. When the switch is on the file will be injected automatically every page load ( with the specified time delay (in milliseconds).\
-9- If you work at cloud.IQ, decide wether you want to enable hot reload for JSON config file. (Note: it has to be in the format ' [APP_ID]_plain.json ' and live within the same folder and at the same level as the dev file. You can now work directly on JSON without need to copy and paste.\
------------------------------------------- 
+9- If you work at cloud.IQ, decide wether you want to enable hot reload for JSON config file. (Note: it has to be in the format ' [APP_ID]_plain.json ' and live within the same folder and at the same level as the dev file. You can now work directly on JSON without need to copy and paste.
 
 
 ## Contributing
