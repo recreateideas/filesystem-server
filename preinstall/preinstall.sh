@@ -1,5 +1,6 @@
-echo 'Detected OS: ' $OSTYPE;
-        sudo npm install --cache /tmp/empty-cache forever && sudo rm -r /tmp/empty-cache;
+echo 'Installing local dependencies...';
+
+        npm install forever;
 
 # if [[ "$OSTYPE" == "linux-gnu" ]]; then
         # echo 'Setting up local dependencies...';
