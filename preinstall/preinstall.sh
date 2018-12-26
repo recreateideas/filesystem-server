@@ -1,6 +1,7 @@
-echo 'Installing local dependencies...';
+echo 'installing local dependencies...';
+echo $OSTYPE;
 
-        npm install forever;
+        sudo npm install --cache /tmp/empty-cache forever && sudo rm -r /tmp/empty-cache;
 
 # if [[ "$OSTYPE" == "linux-gnu" ]]; then
         # echo 'Setting up local dependencies...';

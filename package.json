@@ -1,14 +1,14 @@
 {
   "name": "filesystem-server",
-  "version": "1.0.22",
+  "version": "1.0.23",
   "description": "Node app to serve the filesystem over Localhost via API call with hot reload.",
   "main": "src/service.js",
   "repository": "https://github.com/recreateideas/filesystem-server.git",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon src/service.js",
-    "preinstall": "sudo ./preinstall/preinstall.sh",
-    "postinstall": "sudo ./security/install.sh"
+    "preinstall": "./preinstall/preinstall.sh",
+    "postinstall": "./security/install.sh"
   },
   "devDependencies": {
     "nodemon": "1.18.2"
