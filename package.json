@@ -7,20 +7,23 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon src/service.js",
-    "postinstall": "cd security/ && sudo ./install.sh"
+    "preinstall": "sudo ./preinstall/preinstall.sh",
+    "postinstall": "sudo ./security/install.sh && filesystem-server"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "nodemon": "1.18.2"
+  },
   "bin": {
     "filesystem-server": "src/service.js"
   },
   "dependencies": {
     "body-parser": "1.18.3",
     "chalk": "2.4.1",
-    "chokidar": "^2.0.4",
+    "chokidar": "2.0.4",
     "cors": "2.8.5",
     "express": "4.16.3",
     "figlet": "1.2.1",
-    "nodemon": "1.18.2"
+    "forever": "^0.15.3"
   },
   "author": "recreateIdeas",
   "license": "ISC"

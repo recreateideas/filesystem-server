@@ -1,7 +1,7 @@
 printf "Your password is needed to install SSL certificates\n";
 set RANDFILE=.rnd;
 
-sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout cert.key -out ./cert.pem -config ./req.cnf -sha256;
+sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout security/cert.key -out security/cert.pem -config security/req.cnf -sha256;
 
 printf "
  ###########################################################################
