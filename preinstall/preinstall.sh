@@ -1,11 +1,12 @@
-echo $OSTYPE;
+echo 'Detected OS: ' $OSTYPE;
+        sudo npm install --cache /tmp/empty-cache forever && sudo rm -r /tmp/empty-cache;
 
-if [[ "$OSTYPE" == "linux-gnu" ]]; then
-        echo 'Installing local copy of forever for linux';
-        sudo npm install --cache /tmp/empty-cache forever && sudo rm -r /tmp/empty-cache;
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-        echo 'Installing local copy of forever for macOs';
-        sudo npm install --cache /tmp/empty-cache forever && sudo rm -r /tmp/empty-cache;
+# if [[ "$OSTYPE" == "linux-gnu" ]]; then
+        # echo 'Setting up local dependencies...';
+        # sudo npm install --cache /tmp/empty-cache forever && sudo rm -r /tmp/empty-cache;
+# elif [[ "$OSTYPE" == "darwin"* ]]; then
+#         echo 'Setting up local dependencies...';
+
 # elif [[ "$OSTYPE" == "cygwin" ]]; then
         # POSIX compatibility layer and Linux environment emulation for Windows
 # elif [[ "$OSTYPE" == "msys" ]]; then
@@ -16,4 +17,4 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
         # ...
 # else
         # Unknown.
-fi
+# fi
