@@ -1,6 +1,6 @@
 {
   "name": "filesystem-server",
-  "version": "1.0.34",
+  "version": "1.1.0",
   "description": "Node app to serve the filesystem over Localhost via API call with hot reload.",
   "main": "src/service.js",
   "repository": "https://github.com/recreateideas/filesystem-server.git",
@@ -22,6 +22,7 @@
     "chokidar": "2.0.4",
     "cors": "2.8.5",
     "express": "4.16.3",
+    "express-ws": "^4.0.0",
     "figlet": "1.2.1",
     "forever": "0.15.3"
   },

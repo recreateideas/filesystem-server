@@ -3,30 +3,24 @@
 const express = require('express');
 const { printConsole } = require('./utils/consoleLog');
 const bodyParser = require('body-parser');
-const { createHttpsServer, /*installSSLKey*/ } = require('./https/httpsServer');
+const { createHttpsServer } = require('./https/httpsServer');
+const cors = require('cors');
+// const applyRoutes = require('./routes');
+const { handleArgs } = require('./utils/handleStdInArgs');
 
-var cors = require('cors');
+const { port, httpsPort } = handleArgs(process);
+const app = express();
+const httpsServer = createHttpsServer({ app, httpsPort });
 
-let [, , port, httpsPort] = process.argv;
-
-if (port === undefined) port = 2222;
-
-if (httpsPort === undefined) httpsPort = 4444;
+require('express-ws')(app,httpsServer);
 
 
-// installSSLKey().then(stdout => {
- 
-    printConsole(port, httpsPort);
-    
-    const app = express();
+printConsole(port, httpsPort);
 
-    app.use(cors());
-    app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({extended:true}));
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-    createHttpsServer({ app, httpsPort });
+require('./routes')(app);
 
-    require('./routes')(app);
-
-    app.listen(port);
-// });
+app.listen(port);
