@@ -1,21 +1,5 @@
 const https = require('https');
 const fs = require('fs');
-// const exec = require('child_process').exec;
-
-
-// const installSSLKey = async () => {
-//     const generateKey = new Promise( async(resolve, reject) => {
-//         exec('cd security/ && ./install.sh',
-//             (error, stdout, stderr) => { 
-//                 if (error !== null) {
-//                     reject(stderr);
-//                 } else {
-//                     resolve(stdout);
-//                 }
-//             });
-//     });
-//     return generateKey; 
-// };
 
 const createHttpsServer = (args) => {
     const {
@@ -38,6 +22,5 @@ const createHttpsServer = (args) => {
 
 
 module.exports = {
-    // installSSLKey,
     createHttpsServer,
 };
