@@ -24,14 +24,16 @@ const createHttpsServer = (args) => {
     } = args;
 
     const httpsOptions = {
-     key: fs.readFileSync(__dirname + '/../../security/cert.key'),
+        key: fs.readFileSync(__dirname + '/../../security/cert.key'),
         cert: fs.readFileSync(__dirname + '/../../security/cert.pem')
     };
 
-    const server = https.createServer(httpsOptions, app).listen(httpsPort, () => {
-        // console.log('Https server running at ' + httpsPort);
+    const httpsServer = https.createServer(httpsOptions, app);
+
+    httpsServer.listen(httpsPort, () => {
+        if(httpsServer) console.log('\nHTTPS Server setup.');
     });
-    return server;
+    return httpsServer;
 };
 
 
