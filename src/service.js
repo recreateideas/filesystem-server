@@ -1,4 +1,3 @@
-#!/usr/bin/env forever
 
 const express = require('express');
 const { printConsole } = require('./utils/consoleLog');
