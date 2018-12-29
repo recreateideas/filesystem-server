@@ -14,8 +14,7 @@ module.exports = {
             console.log(`
              #########################################################
 
-                       We're ready to serve your filesystem
-                             on Windows, Linux and Mac.        
+                       We're ready to serve your filesystem.    
                            To access a file via API call
                       send its absolute path, uri-encoded to:\n
                            http://localhost:${port}/files/
