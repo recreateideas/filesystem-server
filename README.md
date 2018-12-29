@@ -20,7 +20,7 @@ Includes chockidar file watcher over websockets for hot reload.
 ```bash
 npm install -g filesystem-server #add "--unsafe" if executing it as 'nobody' user in linux
 ```
-> In Linux, in case you haven't done it yet, run **npm config set prefix /usr/local** to be able to run this package from the command line.
+> In case you haven't done it yet, run **npm config set prefix /usr/local** to be able to run this and other packages from the command line once installed globally.
 
 So that you can connect via https the installation script will install a SSL key and certificate that are valid for 10 years.\
 **These files are created through a postinstall script, this is why on the latest linux distributions you need to run the install with --unsafe.**\
