@@ -5,7 +5,7 @@ const { handleArgs } = require('./src/utils/handleStdInArgs');
 
 const { port, httpsPort } = handleArgs(process);
 
-  var child = new (forever.Monitor)('src/service.js', {
+  var child = new (forever.Monitor)(__dirname +'/src/service.js', {
     max: 3,
     silent: false,
     args: [port, httpsPort]

@@ -2,6 +2,7 @@
 
 ![](https://img.shields.io/badge/built%20for-chrome%20extensions-blue.svg)
 ![](https://img.shields.io/badge/downloads-4k%2Fm-green.svg)
+![](https://img.shields.io/badge/unpacked%20size-20.7kb-yellow.svg)
 ![](https://img.shields.io/badge/dependencies-up%20to%20date-orange.svg)
 ![](https://img.shields.io/badge/license-ISC-purple.svg)
 
@@ -19,6 +20,8 @@ Includes chockidar file watcher over websockets for hot reload.
 ```bash
 npm install -g filesystem-server #add "--unsafe" if executing it as 'nobody' user in linux
 ```
+> In Linux, in case you haven't done it yet, run **npm config set prefix /usr/local** to be able to run this package from the command line.
+
 So that you can connect via https the installation script will install a SSL key and certificate that are valid for 10 years.\
 **These files are created through a postinstall script, this is why on the latest linux distributions you need to run the install with --unsafe.**\
 > *-Don't forget to [add your certificates to your browser](https://support.securly.com/hc/en-us/articles/206081828-How-to-manually-install-the-Securly-SSL-certificate-in-Chrome) if serving files via https on a browser-*
