@@ -5,19 +5,6 @@ var chokidar = require('chokidar');
 
 let fileWatcher, jsonWatcher;
 
-const clearWatchers = (fileSource, jsonPath) => {
-    if (fileWatcher) {
-        fileWatcher.close();
-        fileWatcher = undefined;
-        console.log(`@@@ :: ${new Date()} -> HotReload CLEARED for: ${fileSource}`);
-    }
-    if (jsonWatcher) {
-        jsonWatcher.close();
-        fileWatcher = undefined;
-        console.log(`@@@ :: ${new Date()} -> HotReload CLEARED for: ${jsonPath}`);
-    }
-};
-
 
 module.exports = {
 
@@ -71,7 +58,7 @@ module.exports = {
     },
 
     enableHotReload: async (ws, req) => {
-        console.log(req.url);
+        // console.log(req);
         ws.on('close', () => {
             console.log('Socket disconnected. Clearing all watcherds.');
             clearWatchers();
@@ -79,57 +66,86 @@ module.exports = {
 
         ws.on('message', (msg) => {
             try {
-                const { fileSource, hotReload, thisTab, watchJSON } = JSON.parse(msg);
-
-                let jsonPath = findCiqJSON(fileSource);
-                if (hotReload) {
-                    if (fs.existsSync(fileSource)) {
-
-                        if(!fileWatcher){
-                            fileWatcher = chokidar.watch(fileSource, { persistent: true, });
-                            console.log(`@@@ :: ${new Date()} -> HotReload IS ACTIVE for: ${fileSource}`);
-                            fileWatcher.on('change', fileSource => {
-                                console.log(`${fileSource} has changed, reload Tab`);
-                                if(ws.readyState !== ws.CLOSED) ws.send(JSON.stringify({ thisTab, hotReload, changed: true, fileSource, }));
-                            });    
-                        }
-
-                        if (watchJSON) {
-                            if (fs.existsSync(jsonPath)) {
-                                console.log(`@@@ :: ${new Date()} -> JSON : HotReload IS ACTIVE for: ${jsonPath}`);
-                                if(!jsonWatcher){
-                                    jsonWatcher = chokidar.watch(jsonPath, { persistent: true, });
-                                    jsonWatcher.on('change', jsonPath => {
-                                        console.log(`${jsonPath} has changed, merge in dev`);
-                                        mergeJSONinJS(jsonPath, fileSource);
-                                    });
-    
-                                }
-                            } else {
-                                console.log(`@@@ :: ${new Date()} -> JSON file doesnt Exist: ${jsonPath}`);
-                            }
-                        } else {
-                            if (jsonWatcher) {
-                                jsonWatcher.unwatch(jsonPath);
-                                console.log(`@@@ :: ${new Date()} -> HotReload DISABLED for: ${jsonPath}`);
-                            }
-                        }
-
-                    } else {
-                        if (fileWatcher) fileWatcher.unwatch(fileSource);
-                        if (jsonWatcher) jsonWatcher.unwatch(jsonPath);
-                        console.log(`ERROR: file ${fileSource} doesnt exists! Disabling all the hot reloads.`);
-                        ws.send(JSON.stringify({ thisTab, hotReload, fileSource, error: `the file doesn't exist` }));
-                    }
-                } else {
-                    clearWatchers(fileSource, jsonPath);
-
-                    ws.send(JSON.stringify({ thisTab, hotReload, fileSource }));
+                const { action } = JSON.parse(msg);
+                console.log(`action: ${action}`);
+                switch(action){
+                    
+                    case 'clearWatchers':
+                    clearWatchers();
+                    break;
+                    case 'hotReload':
+                    default:
+                    hotReload(msg);
+                    break;
                 }
+              
             } catch (error) {
                 ws.send(JSON.stringify({ error }));
             }
         });
     },
 
+};
+
+const clearWatchers = (fileSource, jsonPath) => {
+    console.log(`@@@ :: ${new Date()} -> CLEARING ALL WATCHERS`);
+    if (fileWatcher) {
+        fileWatcher.close();
+        fileWatcher = undefined;
+        console.log(`@@@ :: ${new Date()} -> HotReload CLEARED for: ${fileSource}`);
+    }
+    if (jsonWatcher) {
+        jsonWatcher.close();
+        fileWatcher = undefined;
+        console.log(`@@@ :: ${new Date()} -> HotReload CLEARED for: ${jsonPath}`);
+    }
+};
+
+const hotReload = (msg) => {
+    const { fileSource, hotReload, thisTab, watchJSON } = JSON.parse(msg);
+
+    let jsonPath = findCiqJSON(fileSource);
+    if (hotReload) {
+        if (fs.existsSync(fileSource)) {
+            if(!fileWatcher){
+                fileWatcher = chokidar.watch(fileSource, { persistent: true, });
+                console.log(`@@@ :: ${new Date()} -> HotReload IS ACTIVE for: ${fileSource}`);
+                fileWatcher.on('change', fileSource => {
+                    console.log(`${fileSource} has changed, reload Tab`);
+                    if(ws.readyState !== ws.CLOSED) ws.send(JSON.stringify({ thisTab, hotReload, changed: true, fileSource, }));
+                });    
+            }
+
+            if (watchJSON) {
+                if (fs.existsSync(jsonPath)) {
+                    if(!jsonWatcher){
+                        jsonWatcher = chokidar.watch(jsonPath, { persistent: true, });
+                        console.log(`@@@ :: ${new Date()} -> JSON : HotReload IS ACTIVE for: ${jsonPath}`);
+                        jsonWatcher.on('change', jsonPath => {
+                            console.log(`${jsonPath} has changed, merge in dev`);
+                            mergeJSONinJS(jsonPath, fileSource);
+                        });
+
+                    }
+                } else {
+                    console.log(`@@@ :: ${new Date()} -> JSON file doesnt Exist: ${jsonPath}`);
+                }
+            } else {
+                if (jsonWatcher) {
+                    jsonWatcher.unwatch(jsonPath);
+                    console.log(`@@@ :: ${new Date()} -> HotReload DISABLED for: ${jsonPath}`);
+                }
+            }
+
+        } else {
+            if (fileWatcher) fileWatcher.unwatch(fileSource);
+            if (jsonWatcher) jsonWatcher.unwatch(jsonPath);
+            console.log(`ERROR: file ${fileSource} doesnt exists! Disabling all the hot reloads.`);
+            ws.send(JSON.stringify({ thisTab, hotReload, fileSource, error: `the file doesn't exist` }));
+        }
+    } else {
+        clearWatchers(fileSource, jsonPath);
+
+        ws.send(JSON.stringify({ thisTab, hotReload, fileSource }));
+    }
 };
