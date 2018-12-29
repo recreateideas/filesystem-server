@@ -90,19 +90,14 @@ const payLoad = {
         https, // bool
         watchJSON,
 };
-
 const connection = new WebSocket(url);
-        
 if (connection) {
-
         connection.onerror =  (error) => {
                 console.log(error);
         };
-
         connection.onopen =  () => {
                 connection.send(JSON.stringify(payLoad));
         };
-
         connection.onmessage =  (msg) => {
                 const json = JSON.parse(msg.data);
                 const {
