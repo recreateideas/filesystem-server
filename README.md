@@ -1,11 +1,14 @@
 [![NPM](https://nodei.co/npm/filesystem-server.png)](https://nodei.co/npm/filesystem-server/)
 
 ![](https://img.shields.io/badge/built%20for-chrome%20extensions-blue.svg)
-![](https://img.shields.io/badge/downloads-2k%2Fm-orange.svg)
+![](https://img.shields.io/badge/downloads-4k%2Fm-green.svg)
+![](https://img.shields.io/badge/dependencies-up%20to%20date-orange.svg)
+![](https://img.shields.io/badge/license-ISC-purple.svg)
 
 # filesystem-server
 
-Node app to serve the filesystem over Localhost via API call.
+Node app to serve the filesystem over Localhost via API call.\
+Includes chockidar file watcher over websockets for hot reload.
 
 ## Installation
 
@@ -14,7 +17,7 @@ Node app to serve the filesystem over Localhost via API call.
 >Note: for windows you will need to install [cygwin](https://www.cygwin.com/) to be able to use this package. But windows build is still in development.
 
 ```bash
-npm install -g filesystem-server #add "--unsafe" flag if executing it as 'nobody' user in linux
+npm install -g filesystem-server #add "--unsafe" if executing it as 'nobody' user in linux
 ```
 So that you can connect via https the installation script will install a SSL key and certificate that are valid for 10 years.\
 **These files are created through a postinstall script, this is why on the latest linux distributions you need to run the install with --unsafe.**\
@@ -36,7 +39,7 @@ in your terminal run:
 ```bash
 filesystem-server [port] [https port] #?optional default 2222 4444
 ```
-## Usage - Fetch / Axios
+## Usage - Fetch / Axios / WebSockets
 **1-** Test the connectivity
 ```
 const testFSS = async() => {
@@ -74,20 +77,57 @@ const fetchFile = async() => {
 }
 
 ```
+**3-** Connect to websockets to know when a file has change 
+```
+// ...
+const protocol = https ? 'wss' : 'ws';
+const url = `${protocol}://localhost:${localhostPort}/hotReload/`;
+const payLoad = {
+        fileSource, // local path to file
+        hotReload, // bool
+        thisTab, // id of chrome tab to refresh
+        localhostPort,
+        https, // bool
+        watchJSON,
+};
 
-**3-** Know your endpoints
+const connection = new WebSocket(url);
+        
+if (connection) {
+
+        connection.onerror =  (error) => {
+                console.log(error);
+        };
+
+        connection.onopen =  () => {
+                connection.send(JSON.stringify(payLoad));
+        };
+
+        connection.onmessage =  (msg) => {
+                const json = JSON.parse(msg.data);
+                const {
+                    hotReload,
+                    error,
+                    thisTab,
+                } = json;
+                if (hotReload && !error) { reloadTab(thisTab); }
+         };
+}
+// ...
+```` 
+
+**4-** Know your endpoints
 
 ```
     app.get('/exists/:filePath', doesFIleExist);
 
     app.get('/files/:filePath', handleFilePath);
 
-    app.post('/hotReload/', enableHotReload);
+    app.ws('/hotReload/', enableHotReload); // WebSocket
 
-    app.get('/testFSSConnection',(req,res) => {
-        console.log(`@@@ :: ${new Date()} -> connected`);
-        res.json({fssConnected:"true"});
-    });
+    app.get('/testFSSConnection', testConnection);
+
+    app.post('/testWatchers', testWatchers);
 ```
 >-for full code visit the [GitHub Repo](https://github.com/recreateideas/filesystem-server.git)
 

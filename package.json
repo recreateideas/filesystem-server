@@ -5,7 +5,7 @@
   "main": "src/service.js",
   "repository": "https://github.com/recreateideas/filesystem-server.git",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"No test specified\" && exit 1",
     "start": "nodemon src/service.js",
     "postinstall": "node src/postinstall/postinstall.js"
   },
@@ -24,6 +24,16 @@
     "figlet": "1.2.1",
     "forever": "0.15.3"
   },
+  "keywords": [
+    "filesystem",
+    "server",
+    "localhost",
+    "hotreload"
+  ],
   "author": "recreateIdeas",
+  "bugs": {
+    "url": "https://github.com/recreateideas/filesystem-server/issues",
+    "email": "recreate.au@gmail.com"
+  },
   "license": "ISC"
 }
