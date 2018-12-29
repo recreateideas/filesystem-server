@@ -14,7 +14,7 @@ Includes chockidar file watcher over websockets for hot reload.
 
 **1-** Use npm to install filesystem-server globally
 
->Note: for windows you will need to install [cygwin](https://www.cygwin.com/) to be able to use this package. But windows build is still in development.
+>Note: for windows you will need to install [cygwin](https://www.cygwin.com/) to be able to use this package. But windows build is still in development so it might not fully work for every win[*] platform.
 
 ```bash
 npm install -g filesystem-server #add "--unsafe" if executing it as 'nobody' user in linux
