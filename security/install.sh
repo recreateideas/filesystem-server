@@ -4,11 +4,11 @@ if [[ "$OSTYPE" == "cygwin" ]]; then
 openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout security/cert.key -out security/cert.pem -config security/req.cnf -sha256;
 runas /user:$whoami\administrator chmod 755 security/cert.pem && runas /user:$whoami\administrator chmod 755 security/cert.key;
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-printf "Your password is needed to install SSL certificates\n";
+printf "Installing your SSL ceertificate + key......\n";
 sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout security/cert.key -out security/cert.pem -config security/req.cnf -sha256;
 sudo chmod 755 security/cert.pem && sudo chmod 755 security/cert.key;
 elif [[ "$OSTYPE" == "linux-gnu" ]]; then
-printf "Your password is needed to install SSL certificates\n";
+printf "Installing your SSL ceertificate + key......s\n";
 sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout security/cert.key -out security/cert.pem -config security/req.cnf -sha256;
 sudo chmod 755 security/cert.pem && sudo chmod 755 security/cert.key;
 

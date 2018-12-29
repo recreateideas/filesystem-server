@@ -11,8 +11,6 @@ const { port, httpsPort } = handleArgs(process);
     args: [port, httpsPort]
   });
 
-  child.on('exit', function () {
-    console.log('service.js has exited after 3 restarts');
-  });
+  child.on('exit', function () { console.log('service.js has exited after 3 restarts'); });
 
   child.start();
