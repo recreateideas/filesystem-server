@@ -25,7 +25,7 @@ module.exports = {
         const { filePath } = req.params;
         console.log(fs.existsSync(filePath));
         if (fs.existsSync(filePath)) {
-            console.log(`@@@ :: WARN ${logDate()} -> file exists: ${filePath}`);
+            console.log(`@@@ :: ${logDate()} -> file found: ${filePath}`);
             res.json({ fileExists: 'true' });
         } else {
             console.log(`@@@ :: WARN ${logDate()} -> file does not exist: ${filePath}`);
@@ -162,6 +162,6 @@ const logDate = () => {
     hours = hours % 12;
     hours = hours ? hours : 12; // the hour '0' should be '12'
     minutes = minutes < 10 ? '0' + minutes : minutes;
-    var strTime = hours + ':' + minutes + ' ' + ampm;
+    var strTime = hours + ':' + minutes + ampm;
     return date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear() + " " + strTime;
 };
