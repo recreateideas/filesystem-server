@@ -60,8 +60,9 @@ module.exports = {
 
     enableHotReload: async (ws, req) => {
         // console.log(req);
-        ws.on('close', () => {
-            console.log('Socket disconnected. Clearing all watcherds.');
+        ws.on('close', (e) => {
+            console.log(e);
+            console.log('Socket disconnected. Clearing all watchers.');
             clearWatchers();
         });
 
@@ -109,18 +110,18 @@ const hotReload = (ws, msg) => {
     if (hotReload) {
         if (fs.existsSync(fileSource)) {
             if (!fileWatcher) {
-                fileWatcher = chokidar.watch(fileSource, { persistent: true, });
+                fileWatcher = chokidar.watch(fileSource, { usePolling: true, persistent: true, });
                 console.log(`@@@ :: ${logDate()} -> HotReload IS ACTIVE for: ${fileSource}`);
                 fileWatcher.on('change', fileSource => {
                     console.log(`${fileSource} has changed, reload Tab`);
-                    if (ws && ws.readyState !== ws.CLOSED) ws.send(JSON.stringify({ thisTab, hotReload, changed: true, fileSource, }));
+                    ws.send(JSON.stringify({ thisTab, hotReload, changed: true, fileSource, }));
                 });
             }
 
             if (watchJSON) {
                 if (fs.existsSync(jsonPath)) {
 
-                    jsonWatcher = chokidar.watch(jsonPath, { persistent: true, });
+                    jsonWatcher = chokidar.watch(jsonPath, { usePolling: true, persistent: true, });
                     console.log(`@@@ :: ${logDate()} -> JSON : HotReload IS ACTIVE for: ${jsonPath}`);
                     jsonWatcher.on('change', jsonPath => {
                         console.log(`${jsonPath} has changed, merge in dev`);
