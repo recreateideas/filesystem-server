@@ -59,6 +59,7 @@ module.exports = {
     },
 
     enableHotReload: async (ws, req) => {
+        // console.log(req);
         ws.on('close', () => {
             console.log('Socket disconnected. Clearing all watcherds.');
             clearWatchers();
@@ -89,18 +90,27 @@ module.exports = {
 
 const clearWatchers = (fileSource, jsonPath) => {
     if (fileWatcher || jsonWatcher) { console.log(`@@@ :: ${logDate()} -> CLEARING WATCHERS `); }
-    closeWatcher(fileWatcher);
-    closeWatcher(jsonWatcher);
+    if (fileWatcher) {
+        fileWatcher.close();
+        fileWatcher = undefined;
+        console.log(`@@@ :: ${logDate()} -> HotReload CLEARED for: ${fileSource}`);
+    }
+    if (jsonWatcher) {
+        jsonWatcher.close();
+        fileWatcher = undefined;
+        console.log(`@@@ :: ${logDate()} -> HotReload CLEARED for: ${jsonPath}`);
+    }
 };
 
 const hotReload = (ws, msg) => {
     const { fileSource, hotReload, thisTab, watchJSON } = JSON.parse(msg);
- 
+    console.log(fileSource, hotReload, thisTab, watchJSON);
     let jsonPath = findCiqJSON(fileSource);
     if (hotReload) {
         if (fs.existsSync(fileSource)) {
             if (!fileWatcher) {
-                fileWatcher = watchFile(fileSource);
+                fileWatcher = chokidar.watch(fileSource, { persistent: true, });
+                console.log(`@@@ :: ${logDate()} -> HotReload IS ACTIVE for: ${fileSource}`);
                 fileWatcher.on('change', fileSource => {
                     console.log(`${fileSource} has changed, reload Tab`);
                     if (ws && ws.readyState !== ws.CLOSED) ws.send(JSON.stringify({ thisTab, hotReload, changed: true, fileSource, }));
@@ -109,7 +119,9 @@ const hotReload = (ws, msg) => {
 
             if (watchJSON) {
                 if (fs.existsSync(jsonPath)) {
-                    jsonWatcher = watchFile(jsonPath);
+
+                    jsonWatcher = chokidar.watch(jsonPath, { persistent: true, });
+                    console.log(`@@@ :: ${logDate()} -> JSON : HotReload IS ACTIVE for: ${jsonPath}`);
                     jsonWatcher.on('change', jsonPath => {
                         console.log(`${jsonPath} has changed, merge in dev`);
                         mergeJSONinJS(jsonPath, fileSource);
@@ -118,16 +130,23 @@ const hotReload = (ws, msg) => {
                 } else {
                     console.log(`@@@ :: ${logDate()} -> JSON file doesnt Exist: ${jsonPath}`);
                 }
-            } else { closeWatcher(jsonWatcher); }
+            } else {
+                if (jsonWatcher) {
+                    jsonWatcher.unwatch(jsonPath);
+                    jsonWatcher.close();
+                    fileWatcher = undefined;
+                    console.log(`@@@ :: ${logDate()} -> HotReload DISABLED for: ${jsonPath}`);
+                }
+            }
 
         } else {
-            closeWatcher(fileWatcher);
-            closeWatcher(jsonWatcher);
+            if (fileWatcher) fileWatcher.unwatch(fileSource);
+            if (jsonWatcher) jsonWatcher.unwatch(jsonPath);
             console.log(`ERROR: file ${fileSource} doesnt exists! Disabling all the hot reloads.`);
             ws.send(JSON.stringify({ thisTab, hotReload, fileSource, error: `the file doesn't exist` }));
         }
     } else {
-        console.log(`@@@ :: ${logDate()} -> DISABLING HOT RELOAD`);
+        console.log(`@@@ :: ${logDate()} -> DISABLING HOT RELOAD for: ${fileSource}`);
         clearWatchers(fileSource, jsonPath);
 
         ws.send(JSON.stringify({ thisTab, hotReload, fileSource }));
@@ -145,18 +164,4 @@ const logDate = () => {
     minutes = minutes < 10 ? '0' + minutes : minutes;
     var strTime = hours + ':' + minutes + ' ' + ampm;
     return date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear() + " " + strTime;
-};
-
-const closeWatcher = (watcher, path) => {
-    if (watcher) {
-        watcher.unwatch(path);
-        watcher.close();
-        watcher = undefined;
-    }
-    console.log(`@@@ :: ${logDate()} -> HotReload DISABLED for: ${path}`);
-};
-
-const watchFile = (path) => {
-    console.log(`@@@ :: ${logDate()} -> HotReload IS ACTIVE for: ${path}`);
-    return chokidar.watch(path, { persistent: true, });
 };
