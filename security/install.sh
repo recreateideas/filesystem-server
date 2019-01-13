@@ -1,6 +1,6 @@
 set RANDFILE=.rnd;
 
-printf "Installing your SSL ceertificate + key......s\n";
+printf "Installing your SSL ceertificate + key..........\n";
 sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout security/cert.key -out security/cert.pem -config security/req.cnf -sha256;
 sudo chmod 755 security/cert.pem && sudo chmod 755 security/cert.key;
 

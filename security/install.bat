@@ -2,6 +2,7 @@
 set RANDFILE=.rnd
 
 set OPENSSL_CONF=%cd%\security\req.cnf
+echo Installing your SSL ceertificate + key..........
 
 C:\OpenSSL-Win64\bin\openssl.exe req -x509 -nodes -days 3650 -newkey -sha256 rsa:2048 -keyout security\cert.key -out security\cert.pem
 
