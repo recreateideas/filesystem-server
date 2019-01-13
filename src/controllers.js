@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { findCiqJSON, mergeJSONinJS } = require('./utils/filesUtils');
+const {log} = require('./utils/consoleLog');
 var chokidar = require('chokidar');
 
 let fileWatcher, jsonWatcher;
@@ -17,18 +18,18 @@ module.exports = {
     },
 
     testConnection: (req, res) => {
-        console.log(`@@@ :: ${logDate()} -> ping`);
+        log('INFO', 'ping');
         res.json({ fssConnected: "true" });
     },
 
     doesFIleExist: (req, res) => {
         const { filePath } = req.params;
-        // console.log(fs.existsSync(filePath));
+        // log(fs.existsSync(filePath));
         if (fs.existsSync(filePath)) {
-            console.log(`@@@ :: ${logDate()} -> file found: ${filePath}`);
+            log('INFO', `file found: ${filePath}`);
             res.json({ fileExists: 'true' });
         } else {
-            console.log(`@@@ :: WARN ${logDate()} -> file does not exist: ${filePath}`);
+            log('WARN', `file does not exist: ${filePath}`);
             res.json({ fileExists: 'false' });
         }
     },
@@ -41,17 +42,17 @@ module.exports = {
         fs.readFile(filePath, async (error, content) => {
             if (error) {
                 if (error.code == 'ENOENT') {
-                    console.log(`@@@ :: ERROR  ${logDate()} -> file not found: ${filePath}`);
-                    console.log(`@@@ :: sending error file: ${errorFile}`);
+                    log('ERROR',`file not found: ${filePath}`);
+                    log('',`sending error file: ${errorFile}`);
                     res.sendFile(errorFile);
                 }
                 else {
-                    console.log(`@@@ :: ERROR  ${logDate()} -> internal Server Error`);
+                    log('ERROR', `internal Server Error`);
                     res.end({ error: `Unexpected error: ${error}` });
                 }
             }
             else {
-                console.log(`@@@ :: ${logDate()} -> Serving file: ${filePath}`);
+                log('INFO',`Serving file: ${filePath}`);
                 res.sendFile(filePath);
             }
         });
@@ -59,10 +60,8 @@ module.exports = {
     },
 
     enableHotReload: async (ws, req) => {
-        // console.log(req);
         ws.on('close', (e) => {
-            console.log(e);
-            console.log('Socket disconnected. Clearing all watchers.');
+            log('WARN','Socket disconnected. Clearing all watchers.');
             clearWatchers();
         });
 
@@ -90,16 +89,16 @@ module.exports = {
 };
 
 const clearWatchers = (fileSource, jsonPath) => {
-    if (fileWatcher || jsonWatcher) { console.log(`@@@ :: ${logDate()} -> CLEARING WATCHERS `); }
+    if (fileWatcher || jsonWatcher) { log('INFO', `CLEARING WATCHERS`); }
     if (fileWatcher) {
         fileWatcher.close();
         fileWatcher = undefined;
-        console.log(`@@@ :: ${logDate()} -> HotReload CLEARED for: ${fileSource}`);
+        log('INFO', `HotReload CLEARED for: ${fileSource}`);
     }
     if (jsonWatcher) {
         jsonWatcher.close();
         fileWatcher = undefined;
-        console.log(`@@@ :: ${logDate()} -> HotReload CLEARED for: ${jsonPath}`);
+        log('INFO', `HotReload CLEARED for: ${jsonPath}`);
     }
 };
 
@@ -111,9 +110,9 @@ const hotReload = (ws, msg) => {
         if (fs.existsSync(fileSource)) {
             if (!fileWatcher) {
                 fileWatcher = chokidar.watch(fileSource, { usePolling: true, persistent: true, });
-                console.log(`@@@ :: ${logDate()} -> HotReload IS ACTIVE for: ${fileSource}`);
+                log('INFO',`HotReload IS ACTIVE for: ${fileSource}`);
                 fileWatcher.on('change', fileSource => {
-                    console.log(`${fileSource} has changed, reload Tab`);
+                    log('INFO', `${fileSource} has changed, reload Tab`);
                     ws.send(JSON.stringify({ thisTab, hotReload, changed: true, fileSource, }));
                 });
             }
@@ -122,47 +121,34 @@ const hotReload = (ws, msg) => {
                 if (fs.existsSync(jsonPath)) {
 
                     jsonWatcher = chokidar.watch(jsonPath, { usePolling: true, persistent: true, });
-                    console.log(`@@@ :: ${logDate()} -> JSON : HotReload IS ACTIVE for: ${jsonPath}`);
+                    log('INFO', `JSON : HotReload IS ACTIVE for: ${jsonPath}`);
                     jsonWatcher.on('change', jsonPath => {
-                        console.log(`${jsonPath} has changed, merge in dev`);
+                        log('INFO', `${jsonPath} has changed, merge in dev`);
                         mergeJSONinJS(jsonPath, fileSource);
                     });
 
                 } else {
-                    console.log(`@@@ :: ${logDate()} -> JSON file doesnt Exist: ${jsonPath}`);
+                    log('INFO',`JSON file doesnt Exist: ${jsonPath}`);
                 }
             } else {
                 if (jsonWatcher) {
                     jsonWatcher.unwatch(jsonPath);
                     jsonWatcher.close();
                     fileWatcher = undefined;
-                    console.log(`@@@ :: ${logDate()} -> HotReload DISABLED for: ${jsonPath}`);
+                    log('INFO',`HotReload DISABLED for: ${jsonPath}`);
                 }
             }
 
         } else {
             if (fileWatcher) fileWatcher.unwatch(fileSource);
             if (jsonWatcher) jsonWatcher.unwatch(jsonPath);
-            console.log(`ERROR: file ${fileSource} doesnt exists! Disabling all the hot reloads.`);
+            log('ERROR',`file ${fileSource} doesnt exists! Disabling all the hot reloads.`);
             ws.send(JSON.stringify({ thisTab, hotReload, fileSource, error: `the file doesn't exist` }));
         }
     } else {
-        console.log(`@@@ :: ${logDate()} -> DISABLING HOT RELOAD for: ${fileSource}`);
+        log('INFO',`DISABLING HOT RELOAD for: ${fileSource}`);
         clearWatchers(fileSource, jsonPath);
 
         ws.send(JSON.stringify({ thisTab, hotReload, fileSource }));
     }
-};
-
-
-const logDate = () => {
-    const date = new Date();
-    var hours = date.getHours();
-    var minutes = date.getMinutes();
-    var ampm = hours >= 12 ? 'pm' : 'am';
-    hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
-    minutes = minutes < 10 ? '0' + minutes : minutes;
-    var strTime = hours + ':' + minutes + ampm;
-    return date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear() + " " + strTime;
 };

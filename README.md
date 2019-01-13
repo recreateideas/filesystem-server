@@ -140,7 +140,7 @@ if (connection) {
 
 **1**- Install and launch Injector.\
 **2**- Run `filesystem-server`\
-**3**- Import your new SSL certificate (that you will find inside the node_modules/filesystem-server/security folder in your system library ) to Chrome (follow this guide https://support.securly.com/hc/en-us/articles/206081828-How-to-manually-install-the-Securly-SSL-certificate-in-Chrome ) or paste `chrome://flags/#allow-insecure-localhost` in Chrome address bar.\
+**3**- Import your new SSL certificate (that you will find inside the node_modules/filesystem-server/security folder in your system library ) to Chrome (follow [this guide](https://support.securly.com/hc/en-us/articles/206081828-How-to-manually-install-the-Securly-SSL-certificate-in-Chrome)) or paste `chrome://flags/#allow-insecure-localhost` in Chrome address bar.\
 **4**- In the extension, at the top, set the fss (filesystem-server) port to the same port you are running fss with.\
 **5**- Choose the protocol (http|https).\
 **6**- Enter the right port number. \
