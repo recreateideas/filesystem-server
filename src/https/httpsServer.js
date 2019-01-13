@@ -6,16 +6,26 @@ const createHttpsServer = (args) => {
         app,
         httpsPort,
     } = args;
-
+    let dirname, keyPath, certPath;
+    const isWin = process.platform === "win32";
+    if(isWin){
+        dirname = process.cwd();
+        keyPath = '\\security\\cert.key';
+        certPath = '\\security\\cert.pem';
+    }else {
+        dirname = __dirname;
+        keyPath = '/../../security/cert.key';
+        certPath = '/../../security/cert.pem';
+    }
     const httpsOptions = {
-        key: fs.readFileSync(__dirname + '/../../security/cert.key'),
-        cert: fs.readFileSync(__dirname + '/../../security/cert.pem')
+        key: fs.readFileSync(dirname + keyPath),
+        cert: fs.readFileSync(dirname + certPath),
+        requestCert: false,
+        rejectUnauthorized: false,
     };
 
     const httpsServer = https.createServer(httpsOptions, app);
-
     httpsServer.listen(httpsPort, () => {
-        if(httpsServer) console.log('\nHTTPS Server setup.');
     });
     return httpsServer;
 };

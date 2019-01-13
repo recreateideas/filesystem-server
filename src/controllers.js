@@ -23,7 +23,7 @@ module.exports = {
 
     doesFIleExist: (req, res) => {
         const { filePath } = req.params;
-        console.log(fs.existsSync(filePath));
+        // console.log(fs.existsSync(filePath));
         if (fs.existsSync(filePath)) {
             console.log(`@@@ :: ${logDate()} -> file found: ${filePath}`);
             res.json({ fileExists: 'true' });
@@ -105,7 +105,7 @@ const clearWatchers = (fileSource, jsonPath) => {
 
 const hotReload = (ws, msg) => {
     const { fileSource, hotReload, thisTab, watchJSON } = JSON.parse(msg);
-    console.log(fileSource, hotReload, thisTab, watchJSON);
+
     let jsonPath = findCiqJSON(fileSource);
     if (hotReload) {
         if (fs.existsSync(fileSource)) {

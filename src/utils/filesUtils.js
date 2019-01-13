@@ -26,7 +26,19 @@ const mergeJSONinJS = (jsonPath, fileSource) => {
     }
 };
 
+const normalizeWinPath = (path) => {
+    var isWin = process.platform === "win32";
+    if(isWin){
+        const dirnameArray = path.split('\\');
+        const normalizedArray = dirnameArray.map(level => /&/g.test(level) ? level = `"${level}"` : level);
+        const normalizedDirname = normalizedArray.join('\\');
+        return normalizedDirname;
+    } else return path;
+
+};
+
 module.exports = {
     findCiqJSON,
     mergeJSONinJS,
+    normalizeWinPath
 };
