@@ -11,12 +11,12 @@ Node app to serve the filesystem over Localhost via API call.\
 Includes chockidar file watcher over websockets for hot reload.
 
 ## Pre-installation (Windows only)
->**Notes** You will need *Powershell* or similar installed. **Only arch x64 is supported at the moment**.
+>**Note** You will need *Powershell* installed. **Only arch x64 is supported at the moment**.
 
-**1-** Download **OpenSSL** from this [page](https://slproweb.com/products/Win32OpenSSL.html),  [ [this one](https://slproweb.com/download/Win64OpenSSL_Light-1_1_1a.exe) works on my Windows 10)].\
+**1-** Download **OpenSSL** from this [page](https://slproweb.com/products/Win32OpenSSL.html),  [ [this one](https://slproweb.com/download/Win64OpenSSL_Light-1_1_1a.exe) works on my Windows 10].\
 **2-** Run the installer and install the package in **C:\OpenSSL-Win64** (this is very important otherwise you won't be able to install your SSL certificates later on!)\
 **3-** At the end of the installation it will ask you to make a donation.. follow your heart. Just dismiss the popup if you don't feel generous ( task manager might help there). \
-**4-** 
+**4-** Make sure your user has administrator privileges.
 
 
 ## Installation
@@ -26,8 +26,8 @@ Includes chockidar file watcher over websockets for hot reload.
 ```bash
 npm install -g filesystem-server #IN LINUX, add "--unsafe" flag if executing it as 'nobody' user
 ```
-> In Linux, in case you haven't done it yet, run **npm config set prefix /usr/local** to be able to run this and other packages from the command line once installed globally. \
-In Windows, make sure that your npm is configured correctly and that you packages are being installed where you want them to be installed.
+> **In Linux**, in case you haven't done it yet, run **npm config set prefix /usr/local** to be able to run this and other packages from the command line once installed globally. \
+**In Windows**, make sure that your npm is configured correctly and that you packages are being installed where you want them to be installed.
 
 So that you can connect via https the installation script will install a SSL key and certificate that are valid for 10 years.\
 **These files are created through a postinstall script, this is why on the latest linux distributions you need to run the install with --unsafe.** 
